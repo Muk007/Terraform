@@ -1,8 +1,8 @@
 variable "aws_region" {
-	default = "us-east-1"
+	default = "us-east-2"
 }
 variable "ami" {
-	default = "ami-0817d428a6fb68645"
+	default = "ami-07efac79022b86107"
 }
 variable "PUBLIC_KEY" {
 	type = string
@@ -18,3 +18,9 @@ variable "COUNT" {
 	type = number
 	default = 3
 }
+
+variable "availability_zone_names" {
+  	type    = list(string)
+  	default = ["us-east-2a", "us-east-2b"]
+}
+
