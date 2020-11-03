@@ -13,7 +13,7 @@ resource "aws_instance" "terra-instance-1" {
         instance_type = "t2.micro"
         key_name = "${aws_key_pair.mykey.key_name}"
         subnet_id = "${aws_subnet.subnet_1.id}"
-	security_groups = "${aws_security_group.allow_sec.id}"
+	vpc_security_group_ids = [aws_security_group.allow_sec.id]
 	tags = {
                 count = 3
                 Name = "Terra_Instance_${count.index}"
