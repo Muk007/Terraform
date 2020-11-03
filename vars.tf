@@ -1,26 +1,26 @@
 variable "aws_region" {
-	default = "us-east-2"
+  default = "us-east-1"
 }
 variable "ami" {
-	default = "ami-07efac79022b86107"
+  default = "ami-0817d428a6fb68645"
 }
 variable "PUBLIC_KEY" {
-	type = string
-	default = "mykey.pub"
+  type    = string
+  default = "mykey.pub"
 }
 variable "PRIVATE_KEY" {
-	default = "mykey"
+  default = "mykey"
 }
 variable "USERNAME" {
-	default = "ubuuntu"
+  default = "ubuntu"
 }
 variable "COUNT" {
-	type = number
-	default = 3
+  type    = number
+  default = 3
 }
 
 variable "availability_zone_names" {
-  	type    = list(string)
-  	default = ["us-east-2a", "us-east-2b"]
+  type    = list(string)
+  default = ["us-east-1a", "us-east-1b"]
 }
 

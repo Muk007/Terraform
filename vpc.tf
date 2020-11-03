@@ -1,12 +1,22 @@
 resource "aws_vpc" "myvpc" {
         cidr_block = "10.0.0.0/16"
         instance_tenancy = "default"
-        enable_dns_hostnames = "true"
-        enable_dns_support = "true"
-        enable_classiclink = "false"
         tags = {
                 Name = "My_Terra_VPC"
         }
+}
+
+resource "aws_subnet" "subnet_public" {
+        vpc_id = "${aws_vpc.myvpc.id}"
+        cidr_block = "10.0.1.0/28"
+	map_public_ip_on_launch = "true"
+	availability_zone = "${var.availability_zone_names[0]}"
+}
+
+resource "aws_subnet" "subnet_private" {
+        vpc_id = "${aws_vpc.myvpc.id}"
+        cidr_block = "10.0.2.0/28"
+        availability_zone = "${var.availability_zone_names[1]}"
 }
 
 resource "aws_internet_gateway" "IGW" {
@@ -16,7 +26,19 @@ resource "aws_internet_gateway" "IGW" {
         }
 }
 
-resource "aws_route_table"  "route-1" {
+resource "aws_eip" "nat" {
+	vpc = "true"
+	tags = {
+		name = "natGW"
+	}
+}
+
+resource "aws_nat_gateway" "gw" {
+	allocation_id = "${aws_eip.nat.id}"    
+	subnet_id = "${aws_subnet.subnet_public.id}" 
+}
+
+resource "aws_route_table"  "public_route" {
         vpc_id = "${aws_vpc.myvpc.id}"
 	route {
 		cidr_block = "0.0.0.0/0"
@@ -27,33 +49,24 @@ resource "aws_route_table"  "route-1" {
         }
 }
 
-resource "aws_route_table"  "route-2" {
+resource "aws_route_table"  "private_route" {
         vpc_id = "${aws_vpc.myvpc.id}"
-        tags = {
+	route {
+		cidr_block = "0.0.0.0/0"	
+		nat_gateway_id = "${aws_nat_gateway.gw.id}"
+	}
+	tags = {
                 Name = "private route"
         }
 }
 
-resource "aws_subnet" "subnet_1" {
-        vpc_id = "${aws_vpc.myvpc.id}"
-        cidr_block = "10.0.1.0/28"
-	map_public_ip_on_launch = "true"
-	availability_zone = "${var.availability_zone_names[0]}"
+resource "aws_route_table_association" "private_assocation" {
+        subnet_id = "${aws_subnet.subnet_private.id}"
+        route_table_id = "${aws_route_table.private_route.id}"
 }
 
-resource "aws_subnet" "subnet_2" {
-        vpc_id = "${aws_vpc.myvpc.id}"
-        cidr_block = "10.0.2.16/28"
-        availability_zone = "${var.availability_zone_names[1]}"
-}
-
-resource "aws_route_table_association" "a" {
-        subnet_id = "${aws_subnet.subnet_1.id}"
-        route_table_id = "${aws_route_table.route-1.id}"
-}
-
-resource "aws_route_table_association" "b" {
-        gateway_id = "${aws_internet_gateway.IGW.id}"
-        route_table_id = "${aws_route_table.route-2.id}"
+resource "aws_route_table_association" "public_association" {
+        subnet_id = "${aws_subnet.subnet_public.id}"
+        route_table_id = "${aws_route_table.public_route.id}"
 }
 
