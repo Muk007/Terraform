@@ -4,7 +4,7 @@
 
 resource "aws_key_pair" "mykey" {
   key_name   = "mykey"
-  public_key = "${file("${var.PUBLIC_KEY}")}"
+  public_key = "${file(var.PUBLIC_KEY)}"
 }
 
 resource "aws_instance" "web-server" {
