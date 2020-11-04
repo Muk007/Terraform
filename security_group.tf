@@ -14,6 +14,10 @@ resource "aws_security_group" "allow_sec" {
     cidr_blocks = ["0.0.0.0/0"]
 
   }
+  tags = {
+  	Name = "sec-group-for-web"
+  }
+
 }
 
 
@@ -33,5 +37,9 @@ resource "aws_security_group" "db_allow_sec" {
     cidr_blocks = [aws_subnet.subnet_public.cidr_block]
 
   }
+  tags = {
+  	Name = "sec-group-for-db"
+  }
+
 }
 

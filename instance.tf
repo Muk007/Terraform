@@ -14,6 +14,7 @@ resource "aws_instance" "web-server" {
   key_name               = "${aws_key_pair.mykey.key_name}"
   subnet_id              = "${aws_subnet.subnet_public.id}"
   vpc_security_group_ids = [aws_security_group.allow_sec.id]
+  user_data = "${file("shell.sh")}"
   tags = {
 #    count = "${var.COUNT}"
 #    Name  = "Terra_Instance_${count.index}"
