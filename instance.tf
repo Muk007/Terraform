@@ -8,15 +8,16 @@ resource "aws_key_pair" "mykey" {
 }
 
 resource "aws_instance" "web-server" {
-  count                  = "${var.COUNT}"
+#  count                  = "${var.COUNT}"
   ami                    = "${var.ami}"
   instance_type          = "t2.micro"
   key_name               = "${aws_key_pair.mykey.key_name}"
   subnet_id              = "${aws_subnet.subnet_public.id}"
   vpc_security_group_ids = [aws_security_group.allow_sec.id]
   tags = {
-    count = 3
-    Name  = "Terra_Instance_${count.index}"
+#    count = "${var.COUNT}"
+#    Name  = "Terra_Instance_${count.index}"
+     Name = "WEB"
   }
 #         provisioner "local-exec" {
 #                 command = "echo ${aws_instance.web-server*].private_ip} >> private_ip_list.txt"
@@ -24,21 +25,36 @@ resource "aws_instance" "web-server" {
 }
 
 resource "aws_instance" "db-server" {
-  count                  = "${var.COUNT}"
+#  count                  = "${var.COUNT}"
   ami                    = "${var.ami}"
   instance_type          = "t2.micro"
   key_name               = "${aws_key_pair.mykey.key_name}"
   subnet_id              = "${aws_subnet.subnet_private.id}"
   vpc_security_group_ids = [aws_security_group.db_allow_sec.id]
   tags = {
-    count = 3
-    Name  = "Db_Terra_Instance_${count.index}"
+#    count = "${var.COUNT}"
+#    Name  = "Db_Terra_Instance_${count.index}"
+     Name = "DB"
   }
 #         provisioner "local-exec" {
 #                 command = "echo ${aws_instance.db-server*].private_ip} >> private_ip_list.txt"
 #         }
 }
 
+#Creating an extra volume and attaching it to the db-server.
 
+resource "aws_ebs_volume" "ebs_for_db" {
+	availability_zone = "${var.availability_zone_names[1]}"
+	size = 20
+	type = "gp2"
+	tags = {
+		Name = "ebs_for_db"
+		Server_type = "Database"
+	}
+}
 
-#aws_instance.terra-instance.tags.Name
+resource "aws_volume_attachment" "ebs_attach" {
+	device_name = "/dev/xvdh"
+	volume_id = "${aws_ebs_volume.ebs_for_db.id}"
+	instance_id = "${aws_instance.db-server.id}"
+}
