@@ -29,7 +29,7 @@ resource "aws_instance" "web-server" {
     type = "ssh"
     host = self.private_ip
     user = "ubuntu"
-    private_key = file(/home/mukesh/Terraform/mykey) 
+    private_key = "${file("/home/mukesh/Terraform/mykey")}" 
   }
   
   provisioner "file" {
@@ -48,12 +48,12 @@ resource "aws_instance" "db-server" {
   subnet_id              = "${aws_subnet.subnet_private.id}"
   vpc_security_group_ids = [aws_security_group.db_allow_sec.id]
   tags = {
-    count = "${var.COUNT}"
-    #Name  = "Db_Terra_Instance_${count.index}"
-    Name = "DB"
+    	count = "${var.COUNT}"
+    	#Name  = "Db_Terra_Instance_${count.index}"
+    	Name = "DB"
   }
   provisioner "local-exec" {
-    command = "echo ${self.private_ip} >> db_private_ip_list.txt"
+    	command = "echo ${self.private_ip} >> db_private_ip_list.txt"
   }
 }
 
