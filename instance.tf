@@ -16,9 +16,9 @@ resource "aws_instance" "web-server" {
   vpc_security_group_ids = [aws_security_group.allow_sec.id]
  # user_data = "${file("shell.sh")}"
   tags = {
-    count = "${var.COUNT}"
-    Name  = "Terra_Instance_${count.index}"
-    #Name = "WEB-Server"
+    	count = "${var.COUNT}"
+    	Name  = "Terra_Instance_${count.index}"
+    	#Name = "WEB-Server"
   }
    
   provisioner "local-exec" {
@@ -26,10 +26,10 @@ resource "aws_instance" "web-server" {
   }
 
   connection {
-    type = "ssh"
-    host = self.public_ip
-    user = "ubuntu"
-    private_key = "${file("/home/mukesh/Terraform/mykey")}" 
+    	type = "ssh"
+    	host = self.public_ip
+    	user = "ubuntu"
+    	private_key = "${file("/home/mukesh/Terraform/mykey")}" 
   }
   
   provisioner "file" {
