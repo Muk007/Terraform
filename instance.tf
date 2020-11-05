@@ -8,7 +8,7 @@ resource "aws_key_pair" "mykey" {
 }
 
 resource "aws_instance" "web-server" {
-#  count                  = "${var.COUNT}"
+  count                  = "${var.COUNT}"
   ami                    = "${var.ami}"
   instance_type          = "t2.micro"
   key_name               = "${aws_key_pair.mykey.key_name}"
@@ -16,30 +16,45 @@ resource "aws_instance" "web-server" {
   vpc_security_group_ids = [aws_security_group.allow_sec.id]
   user_data = "${file("shell.sh")}"
   tags = {
-#    count = "${var.COUNT}"
-#    Name  = "Terra_Instance_${count.index}"
-     Name = "WEB"
+    count = "${var.COUNT}"
+    Name  = "Terra_Instance_${count.index}"
+    #Name = "WEB-Server"
   }
-#         provisioner "local-exec" {
-#                 command = "echo ${aws_instance.web-server*].private_ip} >> private_ip_list.txt"
-#         }
+   
+  provisioner "local-exec" {
+     command = "echo ${self.private_ip} >> web_private_ip_list.txt"
+  }
+
+  connection {
+    type = "ssh"
+    host = self.private_ip
+    user = "ubuntu"
+    private_key = file(/home/mukesh/Terraform/mykey) 
+  }
+  
+  provisioner "file" {
+        source = "/home/mukesh/Terraform/shell.sh"
+        destination = "/tmp"
+  }
+
+
 }
 
 resource "aws_instance" "db-server" {
-#  count                  = "${var.COUNT}"
+# count                  = "${var.COUNT}"
   ami                    = "${var.ami}"
   instance_type          = "t2.micro"
   key_name               = "${aws_key_pair.mykey.key_name}"
   subnet_id              = "${aws_subnet.subnet_private.id}"
   vpc_security_group_ids = [aws_security_group.db_allow_sec.id]
   tags = {
-#    count = "${var.COUNT}"
-#    Name  = "Db_Terra_Instance_${count.index}"
-     Name = "DB"
+    count = "${var.COUNT}"
+    #Name  = "Db_Terra_Instance_${count.index}"
+    Name = "DB"
   }
-#         provisioner "local-exec" {
-#                 command = "echo ${aws_instance.db-server*].private_ip} >> private_ip_list.txt"
-#         }
+  provisioner "local-exec" {
+    command = "echo ${self.private_ip} >> db_private_ip_list.txt"
+  }
 }
 
 #Creating an extra volume and attaching it to the db-server.

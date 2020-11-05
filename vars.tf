@@ -16,7 +16,7 @@ variable "USERNAME" {
 }
 variable "COUNT" {
   type    = number
-  default = 1
+  default = 3
 }
 
 variable "availability_zone_names" {

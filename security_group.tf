@@ -40,6 +40,4 @@ resource "aws_security_group" "db_allow_sec" {
   tags = {
   	Name = "sec-group-for-db"
   }
-
 }
-
